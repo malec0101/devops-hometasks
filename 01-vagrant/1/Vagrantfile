@@ -1,0 +1,43 @@
+ # -*- mode: ruby -*-
+ # vi: set ft=ruby :
+
+
+
+Vagrant.configure("2") do |config|
+    config.vm.box = "generic/debian11"
+    config.vm.synced_folder  "./", "/vagrant", create: true, disabled: false
+
+    
+    
+
+    config.vm.provider "virtualbox" do |vb|
+        vb.memory = "1024"
+
+
+    end
+    config.vm.define "web_0", primary: true do |web_0|
+    
+        config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+        config.vm.network "forwarded_port", guest: 81, host: 8081, host_ip: "127.0.0.1"    
+
+    config.vm.provision "shell", inline: <<-SHELL
+        apt-get update
+        apt-get install apache2 -y  
+        apt install php7.4
+        apt install libapache2-mod-php7.4 -y
+        a2enmod php7.4 
+        cat /vagrant/ports.conf > /etc/apache2/ports.conf
+        cat /vagrant/000-default.conf > /etc/apache2/sites-available/000-default.conf
+        rm -r /var/www/html/
+        mkdir /var/www/site1/
+        mkdir /var/www/site2/
+        cat /vagrant/index.php > /var/www/site2/index.php
+        chmod +x /var/www/site2/index.php
+        cat /vagrant/index.html > /var/www/site1/index.html
+        sudo chown www-data:www-data /var/www/site1/*
+        sudo chown www-data:www-data /var/www/site2/*
+        systemctl restart apache2
+    SHELL
+   end
+end 
+
