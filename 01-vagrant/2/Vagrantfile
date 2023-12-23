@@ -1,0 +1,51 @@
+ # -*- mode: ruby -*-
+ # vi: set ft=ruby :
+
+
+
+Vagrant.configure("2") do |config|
+    config.vm.box = "generic/debian11"
+    config.vm.synced_folder  "./", "/vagrant", create: true, disabled: false
+    config.vm.provider "virtualbox" do |vb|
+        vb.memory = "1024"
+
+    end
+    config.vm.define "web_html", primary: true do |web_html|
+        
+        web_html.vm.network "private_network", ip: "192.168.56.4"   
+
+    web_html.vm.provision "shell", inline: <<-SHELL
+        apt-get update
+        apt-get install apache2 -y  
+        
+        head -18 /vagrant/000-default.conf > /etc/apache2/sites-available/000-default.conf
+        rm -r /var/www/html/
+        mkdir /var/www/site1/
+        cat /vagrant/index.html > /var/www/site1/index.html
+        sudo chown www-data:www-data /var/www/site1/*
+        systemctl restart apache2
+    SHELL
+   end
+
+    config.vm.define "web_php", primary: true do |web_php|
+        
+        web_php.vm.network "private_network", ip: "192.168.56.5"   
+
+    web_php.vm.provision "shell", inline: <<-SHELL
+        apt-get update
+        apt-get install apache2 -y  
+        apt install php7.4
+        apt install libapache2-mod-php7.4 -y
+        a2enmod php7.4 
+        
+        sed 's/*:81>/*:80>/' /vagrant/000-default.conf | tail -21 > /etc/apache2/sites-available/000-default.conf
+        rm -r /var/www/html/
+        mkdir /var/www/site2/
+        cat /vagrant/index.php > /var/www/site2/index.php
+        chmod +x /var/www/site2/index.php
+        sudo chown www-data:www-data /var/www/site2/*
+        systemctl restart apache2
+    SHELL
+   end
+end 
+
