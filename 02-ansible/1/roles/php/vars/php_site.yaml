@@ -1,0 +1,6 @@
+---
+app_user: "vagrant"
+http_host: "php_site"
+http_conf: "php_site.conf"
+http_port: "81"
+disable_default: true

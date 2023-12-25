@@ -1,0 +1,30 @@
+ # -*- mode: ruby -*-
+ # vi: set ft=ruby :
+
+
+
+Vagrant.configure("2") do |config|
+    config.vm.box = "generic/debian11"
+    config.vm.synced_folder  "./", "/vagrant", create: true, disabled: false
+
+    
+    
+
+    config.vm.provider "virtualbox" do |vb|
+        vb.memory = "1024"
+
+
+    end
+    config.vm.define "web_0", primary: true do |web_0|
+    
+        web_0.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+        web_0.vm.network "forwarded_port", guest: 81, host: 8081, host_ip: "127.0.0.1"    
+
+     web_0.vm.provision :ansible_local do |ansible|
+            ansible.playbook = "playbook.yaml"
+            ansible.limit = "all"
+            ansible.inventory_path = "inventory"
+         end
+     end      
+end 
+
