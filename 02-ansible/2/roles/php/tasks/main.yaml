@@ -1,0 +1,4 @@
+- name: Install php7.4
+  import_tasks: php_install.yaml 
+- name: add php site
+  import_tasks: php_site.yaml   

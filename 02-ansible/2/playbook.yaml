@@ -1,0 +1,51 @@
+---
+- name:  pre_provision
+  hosts: all
+  
+
+  tasks:
+  - debug:
+      msg: "Running on {{ inventory_hostname }}"  
+  - name: 
+    become: yes
+    replace:
+      path: /etc/ssh/sshd_config
+      regexp: '^PasswordAuthentication no$'
+      replace: 'PasswordAuthentication yes'
+    notify:
+    - Restart sshd
+  - name: install packages ranger, sshpass
+    become: yes
+    apt:
+      pkg:
+      - mc
+      - sshpass
+      state: present
+  handlers:
+  - name: Restart sshd
+    become: yes
+    service:
+      name: sshd
+      state: restarted
+
+        # playbook web_html
+- name: apache provision
+  hosts: [web]
+  vars_files:
+    - roles/apache/vars/html_site.yaml
+  roles:
+    - apache
+
+        # playbook web_php
+- name: php provision
+  hosts: web_php
+  vars_files:
+    - roles/php/vars/php_site.yaml
+  roles:
+    - php
+
+        # playbook web_rev_prox
+- name: rev proxy provision
+  hosts: [web_rev_proxy]
+  roles:
+    - nginx     

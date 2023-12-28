@@ -1,0 +1,22 @@
+server {
+        listen 80;
+        index index.php index.html ;
+        server_name {{ http_host }}1;
+
+        location / {
+               proxy_pass http://{{ proxy_ip_1 }}:{{ http_port_1 }};
+               include proxy_params; 
+        }
+}
+
+
+server {
+        listen 81;
+        index index.php index.html ;
+        server_name {{ http_host }}2;
+
+        location / {
+               proxy_pass http://{{ proxy_ip_2 }}:{{ http_port_2 }};
+	       include proxy_params;
+        }
+}

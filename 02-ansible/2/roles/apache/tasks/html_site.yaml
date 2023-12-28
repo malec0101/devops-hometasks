@@ -1,0 +1,59 @@
+  # add html site
+---
+- name: Create document root
+  become: yes
+  file:
+    path: "/var/www/{{ http_host }}"
+    state: directory
+    owner: "{{ app_user }}"
+    mode: '0755'
+
+- name: Copy index test page
+  template:
+    src: "roles/apache/files/index.html.j2"
+    dest: "/var/www/{{ http_host }}/index.html"
+
+- name: add files Own/gr www-data
+  become: yes
+  shell: chown www-data:www-data /var/www/{{ http_host }}/*
+
+- name: Set up Apache virtualhost
+  become: yes
+  template:
+    src: "roles/apache/files/apache.conf.j2"
+    dest: "/etc/apache2/sites-available/{{ http_conf }}"
+
+- name: add ports.conf
+  become: yes
+  template:
+    src: "roles/apache/files/ports.conf.j2"
+    dest: "/etc/apache2/ports.conf"
+      
+- name: Enable new site
+  become: yes
+  shell: a2ensite {{ http_conf }}
+  notify: Reload Apache
+
+- name: Disable default Apache site
+  become: yes
+  shell: a2dissite 000-default.conf
+  when: disable_default
+  notify: Reload Apache
+
+- name: UFW - Deny HTTP port
+  become: yes
+  ufw:
+    rule: deny
+    proto: tcp
+    to_ip: "any"
+    port: "{{ http_port }}"
+  when: http_port != "80"
+
+- name: UFW - Allow HTTP port
+  become: yes
+  ufw:
+    rule: allow
+    proto: tcp
+    to_ip: "{{ ip_rev_proxy }}"
+    port: "{{ http_port }}"
+  when: http_port != "80"  

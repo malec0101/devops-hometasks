@@ -1,0 +1,2 @@
+- [02-ansible/1/](02-ansible/1/README.md) (local)
+- [02-ansible/2/](02-ansible/2/README.md) (PrivateNetwork)

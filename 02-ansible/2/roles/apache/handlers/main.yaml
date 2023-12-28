@@ -1,0 +1,4 @@
+---
+- name: Reload Apache
+  become: yes
+  shell: systemctl reload apache2.service

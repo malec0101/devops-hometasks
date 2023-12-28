@@ -1,0 +1,14 @@
+        # php, libapache2-mod-php install
+---  
+- debug:
+    msg: "Running on {{ inventory_hostname }}"  
+- name: install packages php, libapache2-mod-php
+  become: yes
+  apt:
+    pkg:
+    - php7.4
+    - libapache2-mod-php7.4 
+      # state: present
+  notify:
+    - a2enmod php7.4
+
