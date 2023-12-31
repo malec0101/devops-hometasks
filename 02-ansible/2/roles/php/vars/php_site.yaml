@@ -1,7 +1,0 @@
----
-app_user: "vagrant"
-http_host: "php_site"
-http_conf: "php_site.conf"
-http_port: "8081"
-ip_rev_proxy: "192.168.56.7"  # ufw rule 
-disable_default: true

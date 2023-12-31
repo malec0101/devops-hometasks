@@ -1,4 +1,0 @@
----
-- name: Reload Nginx
-  become: yes
-  shell: systemctl reload nginx.service

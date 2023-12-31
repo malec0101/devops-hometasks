@@ -1,4 +1,4 @@
-  # add html site
+  # add php site
 ---
 - name: Create document root
   become: yes
@@ -9,9 +9,10 @@
     mode: '0755'
 
 - name: Copy index test page
+  become: yes
   template:
-    src: "index.html.j2"
-    dest: "/var/www/html/{{ http_host }}/index.html"
+    src: "index.php.j2"
+    dest: "/var/www/html/{{ http_host }}/index.php"
 
 - name: add files Own/gr www-data
   become: yes
@@ -28,16 +29,14 @@
   template:
     src: "ports.conf.j2"
     dest: "/etc/apache2/ports.conf"
-      
+ 
 - name: Enable new site
   become: yes
   shell: a2ensite {{ http_conf }}
-  notify: restart Apache
+  notify: Reload Apache
 
 - name: Disable default Apache site
   become: yes
   shell: a2dissite 000-default.conf
   when: disable_default
-  notify: restart Apache
-
-  
+  notify: Reload Apache

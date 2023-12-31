@@ -1,0 +1,13 @@
+<VirtualHost *:{{ http_port }}>
+    ServerAdmin webmaster@localhost
+    ServerName 192.168.56.6/dynamic
+    DocumentRoot /var/www/html
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+ 
+ <FilesMatch \.php$>
+        SetHandler "proxy:unix:/var/run/php/php7.4-fpm.sock|fcgi://localhost/"
+           </FilesMatch>
+ 
+
+</VirtualHost>   

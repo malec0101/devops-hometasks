@@ -1,0 +1,10 @@
+# Nginx install
+--- 
+- debug:
+    msg: "Running on {{ inventory_hostname }}"  
+- name: install packages nginx
+  become: yes
+  apt:
+    pkg:
+    - nginx
+    state: present

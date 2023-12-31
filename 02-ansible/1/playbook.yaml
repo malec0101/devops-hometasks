@@ -31,14 +31,10 @@
         # playbook web_0
 - name: apache provision
   hosts: [web]
-  vars_files:
-    - roles/apache/vars/html_site.yaml
   roles:
     - apache
 
 - name: php provision
   hosts: [web]
-  vars_files:
-    - roles/php/vars/php_site.yaml
   roles:
     - php

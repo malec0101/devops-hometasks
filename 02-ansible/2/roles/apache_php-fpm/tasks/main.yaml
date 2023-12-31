@@ -1,0 +1,6 @@
+- name: Install a2
+  import_tasks: a2_install.yaml
+- name: Install php7.4, php-fpm
+  import_tasks: php7.4_php-fpm_install.yaml 
+- name: add php site
+  import_tasks: php_site.yaml   

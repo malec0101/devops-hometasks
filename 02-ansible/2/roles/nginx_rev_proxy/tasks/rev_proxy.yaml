@@ -1,0 +1,30 @@
+# Nginx Conf rev_proxy
+---
+- name: chek default conf 
+  stat:
+    path: /etc/nginx/sites-available/default
+  register: default_stat
+- name: rm default conf
+  become: yes
+  file: 
+    path: "{{ item }}" 
+    state: absent
+  when: default_stat.stat.exists
+  with_items:
+    - /etc/nginx/sites-available/default
+    - /etc/nginx/sites-enabled/default
+
+- name: Sets Nginx conf file
+  become: yes
+  template:
+    src: "nginx.conf.j2"
+    dest: "/etc/nginx/sites-available/{{ http_conf }}"
+  notify: Restart Nginx
+
+- name: Enables
+  become: yes
+  file:
+    src: "/etc/nginx/sites-available/{{ http_conf }}"
+    dest: "/etc/nginx/sites-enabled/{{ http_conf }}"
+    state: link
+  notify: Restart Nginx

@@ -1,0 +1,29 @@
+        # php, libapache2-mod-php install
+---  
+- debug:
+    msg: "Running on {{ inventory_hostname }}"  
+- name: install packages php, php-fpm
+  become: yes
+  apt:
+    pkg:
+    - php7.4
+    - php-fpm
+  notify:
+    - Enable mod actions
+
+- name: Copy poll fpm www.conf
+  become: yes
+  template:
+    src: "www.conf.j2"
+    dest: "/etc/php/7.4/fpm/pool.d/www.conf.j2" 
+  notify:
+    - Enable conf
+
+- name: Copy fastcgi.conf
+  become: yes
+  template:
+    src: "fastcgi.conf.j2"
+    dest: "/etc/apache2/conf-available/fastcgi.conf" 
+  notify:
+    - Enable conf  
+
