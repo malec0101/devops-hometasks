@@ -1,0 +1,4 @@
+- name: Install puppet-agent
+  import_tasks: puppet-agent_install.yaml
+- name: Configure puppet-agent    
+  import_tasks: puppet-agent_conf.yaml

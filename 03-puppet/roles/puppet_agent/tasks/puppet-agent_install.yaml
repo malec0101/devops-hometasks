@@ -1,0 +1,16 @@
+--- 
+- name: install repo puppet
+  become: yes
+  yum:
+    name: https://yum.puppet.com/puppet7-release-el-8.noarch.rpm
+    state: present 
+    disable_gpg_check: true
+
+- name: install puppet7 agent, git
+  become: yes
+  yum:
+    pkg:
+      - puppet-agent
+      - git
+    state: present 
+  notify: Enable, started puppet-agent

@@ -1,0 +1,44 @@
+--- 
+- name: Add port 8140/tcp
+  become: yes
+  shell: firewall-cmd --add-port=8140/tcp && firewall-cmd --runtime-to-permanent
+  register: chek_result
+- name: chek_result "Add port 8140/tcp"
+  debug:
+    msg: "{{ chek_result.stdout }}"
+
+- name: install repo puppet
+  become: yes
+  yum:
+    name: https://yum.puppet.com/puppet7-release-el-8.noarch.rpm
+    state: present
+    disable_gpg_check: true
+
+- debug:
+    msg: playing "Metallica - Master of Puppets"     
+
+- name: install puppetserver, git
+  become: yes
+  yum:
+    pkg:
+      - puppetserver.noarch
+      - git
+    state: present
+  notify: Enable, started puppetserver
+  register: chek_install
+
+- name: install lib ruby "r10k"
+  become: yes
+  shell: /opt/puppetlabs/puppet/bin/gem install r10k
+  when: chek_install.msg == ""
+  register: res
+- name: chek_install "r10k"
+  debug:
+    msg: "{{ res.stdout }}"
+  when: chek_install.msg == ""
+
+- name: add conf puppetserv 256mb by test_vm 
+  become: yes
+  shell:  sed -i 's/-Xms2g\ -Xmx2g/-Xms256m\ -Xmx256m/' /etc/sysconfig/puppetserver
+  when: test_vm == "yes"  
+  notify: Restarted puppetserver

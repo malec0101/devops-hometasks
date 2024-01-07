@@ -1,0 +1,13 @@
+---
+- name: Enable, started puppet-agent
+  become: yes
+  systemd_service:
+    name: puppet
+    state: started
+    enabled: true
+
+- name: Restarted puppet-agent
+  become: yes
+  systemd_service:
+    name: puppet
+    state: restarted

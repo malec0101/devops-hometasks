@@ -1,0 +1,37 @@
+---
+- name:  pre_provision
+  hosts: all
+  tasks:
+  - name: 
+    become: yes
+    replace:
+      path: /etc/ssh/sshd_config
+      regexp: '^PasswordAuthentication no$'
+      replace: 'PasswordAuthentication yes'
+    notify:
+    - Restart sshd
+  - name: install packages mc, sshpass
+    become: yes
+    yum:
+      pkg:
+      - mc
+      - sshpass
+      state: present
+  handlers:
+  - name: Restart sshd
+    become: yes
+    service:
+      name: sshd
+      state: restarted
+
+        # playbook puppetserver r10k install
+- name: puppetserver provision
+  hosts: [master.puppet]
+  roles:
+    - puppet_serv_r10k
+
+      # playbook puppet agent install
+- name: puppet agent provision
+  hosts: [slave.puppet]
+  roles:
+    - puppet_agent

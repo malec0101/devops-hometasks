@@ -1,1 +1,2 @@
 - [02-ansible](02-ansible/README.md) (HW#2)
+- [03-puppet](03-puppet/README.md) (HW#3)

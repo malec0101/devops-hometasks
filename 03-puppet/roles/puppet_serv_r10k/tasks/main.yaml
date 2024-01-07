@@ -1,0 +1,8 @@
+- name: Install puppetserv, r10k
+  import_tasks: puppetserv_r10k_install.yaml
+- name: Configure puppetserv 
+  import_tasks: puppetserv_conf.yaml
+
+
+
+

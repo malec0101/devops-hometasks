@@ -1,0 +1,14 @@
+---
+- name: Configure pup agent 
+  become: yes
+  template:
+    src: "puppet.conf.j2"
+    dest: "/etc/puppetlabs/puppet/puppet.conf"
+
+- name: Add host name serv in /etc/hosts  
+  become: yes
+  lineinfile:
+    path: /etc/hosts
+    regexp: "'^{{ puppetserver_ip }}'"
+    line: "{{ puppetserver_ip }} {{ puppetserver_name }}"
+  notify: Restarted puppet-agent
