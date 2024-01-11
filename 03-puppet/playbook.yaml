@@ -30,7 +30,7 @@
   roles:
     - puppet_serv_r10k
 
-      # playbook puppet agent install
+       # playbook puppet agent install
 - name: puppet agent provision
   hosts: [slave.puppet]
   roles:

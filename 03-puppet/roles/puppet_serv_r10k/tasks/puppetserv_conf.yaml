@@ -13,16 +13,3 @@
     src: "autosign.conf.j2"
     dest: "/etc/puppetlabs/puppet/autosign.conf"     
 
-- name: Create a directory r10k
-  become: yes
-  file:
-    path: /etc/puppetlabs/r10k
-    state: directory
-    mode: '0751'
-
-- name: Add r10k.yaml
-  become: yes
-  template:
-    src: "r10k.yaml.j2"
-    dest: "/etc/puppetlabs/r10k/r10k.yaml"
-
