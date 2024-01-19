@@ -2,6 +2,7 @@
 puppetserver_name: "master.puppet"  
 puppetserver_ip: ""  
 runinterval: "1m"  
+environment: "production" 
 
 disable_default: true
   

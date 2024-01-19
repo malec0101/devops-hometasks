@@ -28,7 +28,8 @@
 - name: puppetserver provision
   hosts: [master.puppet]
   roles:
-    - puppet_serv_r10k
+    - puppet_serv
+    - r10k_for_puppet_serv
 
        # playbook puppet agent install
 - name: puppet agent provision
