@@ -1,6 +1,6 @@
 #!/bin/bash
 
-/opt/puppetlabs/puppet/bin/r10k deploy environment 2>> /etc/puppetlabs/r10k/errorlog_r10k_deploy
+/opt/puppetlabs/puppet/bin/r10k deploy environment -p 2>> /etc/puppetlabs/r10k/errorlog_r10k_deploy
 
 if [ -f /etc/puppetlabs/code/environments/production/Puppetfile ]
   then

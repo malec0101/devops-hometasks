@@ -16,6 +16,8 @@
       pkg:
       - mc
       - sshpass
+      - ranger
+      - tmux 
       state: present
   handlers:
   - name: Restart sshd
