@@ -9,3 +9,4 @@ if [ -f /etc/puppetlabs/code/environments/production/Puppetfile ]
             /opt/puppetlabs/puppet/bin/r10k deploy environment --puppetfile
       fi
 fi
+puppet agent -t
