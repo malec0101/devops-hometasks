@@ -1,0 +1,16 @@
+jenkins_hostname: "jenkins.vm"
+java_packages: "openjdk-17-jdk" 
+
+jenkins_admin_username: admin
+jenkins_admin_password: admin  
+
+jenkins_plugins_install_dependencies: true
+jenkins_plugins_state: latest
+jenkins_plugins:              # имена плагинов стоит указывать, как написано в ссылке на плагин, если кликнуть на него из самого jenkins 
+  - configuration-as-code     # пример: https://plugins.jenkins.io/golang/ , то есть имя плагина golang
+  - nexus-artifact-uploader  
+  - git
+  - golang
+  - ssh
+  - ws-cleanup
+

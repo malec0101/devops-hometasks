@@ -1,0 +1,4 @@
+---
+dependencies:
+  - role: geerlingguy.java 
+  - role: geerlingguy.jenkins

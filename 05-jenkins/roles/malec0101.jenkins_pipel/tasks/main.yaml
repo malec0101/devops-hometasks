@@ -1,0 +1,40 @@
+- name: Create job directory "word-cloud-generator"
+  become: yes
+  file:
+    path: /var/lib/jenkins/jobs/word-cloud-generator
+    state: directory
+    owner: jenkins
+    group: jenkins 
+    mode: '0751'
+
+- name: Add job word-cloud-generator
+  become: yes
+  template:
+    src: "job_word-cloud-generator.xml.j2"
+    dest: "/var/lib/jenkins/jobs/word-cloud-generator/config.xml"
+    owner: jenkins
+    group: jenkins
+    mode: '0644'  
+  notify: Restart jenkins 
+
+- name: Add jenkins.yaml
+  become: yes
+  template:
+    src: "jenkins.yaml.j2"
+    dest: "/var/lib/jenkins/jenkins.yaml"
+    owner: jenkins
+    group: jenkins
+    mode: '0644'
+
+- name: Add sshhost_conf.xml
+  become: yes
+  template:
+    src: "sshhost_conf.xml.j2"
+    dest: "/var/lib/jenkins/org.jvnet.hudson.plugins.SSHBuildWrapper.xml"
+
+- name: install jq    
+  become: yes
+  apt:
+    pkg:
+    - jq
+    state: present      

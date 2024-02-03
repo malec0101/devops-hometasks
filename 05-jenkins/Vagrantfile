@@ -1,0 +1,52 @@
+ # -*- mode: ruby -*-
+ # vi: set ft=ruby :
+
+
+
+Vagrant.configure("2") do |config|
+    config.vm.box = "generic/debian11"
+    config.vm.synced_folder  "./", "/vagrant", create: true, disabled: false
+
+
+    config.vm.provider "virtualbox" do |vb|
+        vb.memory = "512"
+        vb.cpus   = 1 
+    end
+
+
+    config.vm.define "nexus.vm" do |nexus|
+        nexus.vm.network "private_network", ip: "192.168.56.6"
+        nexus.vm.hostname = "nexus.vm"
+        nexus.vm.provider("virtualbox") { |vb| vb.memory = 1024 }
+
+    end
+
+    config.vm.define "staging.vm" do |staging|
+        staging.vm.network "private_network", ip: "192.168.56.7"
+        staging.vm.hostname = "staging.vm"
+
+    end
+
+    config.vm.define "production.vm" do |production|
+        production.vm.network "private_network", ip: "192.168.56.8"
+        production.vm.hostname = "production.vm"
+    end
+
+
+    config.vm.define "jenkins.vm", primary: true do |jenkins|
+        jenkins.vm.network "private_network", ip: "192.168.56.5"
+        jenkins.vm.hostname = "jenkins.vm"
+        jenkins.vm.provider("virtualbox") { |vb| vb.memory = 1024 }
+
+        jenkins.vm.provision :file, source: '.vagrant/machines/nexus.vm/virtualbox/private_key', destination: '/home/vagrant/private_key_nexus'
+        jenkins.vm.provision :file, source: '.vagrant/machines/staging.vm/virtualbox/private_key', destination: '/home/vagrant/private_key_staging'
+        jenkins.vm.provision :file, source: '.vagrant/machines/production.vm/virtualbox/private_key', destination: '/home/vagrant/private_key_production'
+
+        jenkins.vm.provision "ansible_local" do |ansible|
+            ansible.playbook = "playbook.yaml"
+            ansible.limit = "all"
+            ansible.inventory_path = "inventory"
+      end      
+   end
+end 
+
