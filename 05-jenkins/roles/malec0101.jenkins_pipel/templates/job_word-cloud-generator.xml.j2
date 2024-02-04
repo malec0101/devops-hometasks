@@ -67,13 +67,26 @@ sudo service wordcloud start</command>
       <execEachLine>false</execEachLine>
       <hideCommand>false</hideCommand>
     </org.jvnet.hudson.plugins.SSHBuilder>
+    <org.jvnet.hudson.plugins.SSHBuilder plugin="ssh@2.6.1">
+	    <siteName>vagrant@{{ production_ip }}:22</siteName>
+      <command>sudo service wordcloud stop
+
+curl -X GET &quot;http://{{ nexus_ip }}:8081/repository/word-cloud-build/1/word-cloud-generator/$BUILD_NUMBER/word-cloud-generator-$BUILD_NUMBER.gz&quot; -o /opt/wordcloud/word-cloud-generator.gz --user &quot;$NEXUS_DOWNLOAD_USER:$NEXUS_DOWNLOAD_PASSWORD&quot;
+ls -l /opt/wordcloud
+gunzip -f /opt/wordcloud/word-cloud-generator.gz
+chmod +x /opt/wordcloud/word-cloud-generator
+
+sudo service wordcloud start</command>
+      <execEachLine>false</execEachLine>
+      <hideCommand>false</hideCommand>
+    </org.jvnet.hudson.plugins.SSHBuilder>    
     <hudson.tasks.Shell>
-      <command>res=`curl -s -H &quot;Content-Type: application/json&quot; -d &apos;{&quot;text&quot;:&quot;ths is a really really really important thing this is&quot;}&apos; http://{{ staging_ip }}:8888/version | jq &apos;. | length&apos;`
+      <command>res=`curl -s -H &quot;Content-Type: application/json&quot; -d &apos;{&quot;text&quot;:&quot;ths is a really really really important thing this is&quot;}&apos; http://{{ production_ip }}:8888/version | jq &apos;. | length&apos;`
 if [ &quot;1&quot; != &quot;$res&quot; ]; then
   exit 99
 fi
 
-res=`curl -s -H &quot;Content-Type: application/json&quot; -d &apos;{&quot;text&quot;:&quot;ths is a really really really important thing this is&quot;}&apos; http://{{ staging_ip }}:8888/api | jq &apos;. | length&apos;`
+res=`curl -s -H &quot;Content-Type: application/json&quot; -d &apos;{&quot;text&quot;:&quot;ths is a really really really important thing this is&quot;}&apos; http://{{ production_ip }}:8888/api | jq &apos;. | length&apos;`
 if [ &quot;7&quot; != &quot;$res&quot; ]; then
   exit 99
 fi</command>

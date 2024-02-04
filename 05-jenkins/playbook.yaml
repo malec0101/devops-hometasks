@@ -3,42 +3,15 @@
   hosts: all
   
   tasks:
-  - name:
-    become: yes  
-    replace:
-      path: /etc/ssh/sshd_config
-      regexp: '^PasswordAuthentication no$'
-      replace: 'PasswordAuthentication yes'
-    notify:
-    - Restart sshd
-
-  - name: install packages mc, sshpass, tmux, ranger
+  - name: install packages mc, tmux, ranger
     become: yes
     apt:
       pkg:
       - mc
-      - sshpass
       - tmux
       - ranger
-      - zsh
       - build-essential
       state: present
-    register: inst_res
-    
-  - debug:
-      msg: "{{ inst_res }}" 
-
-        #  - name: default zsh
-        #become: yes
-        #shell: chsh -s $(which zsh) ; sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-        #when: inst_res == ""
-
-  handlers:
-  - name: Restart sshd
-    become: yes
-    service:
-      name: sshd
-      state: restarted
 
         # playbook jenkins.vm
 - name: configure jenkins

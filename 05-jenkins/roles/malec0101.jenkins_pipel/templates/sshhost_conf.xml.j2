@@ -10,5 +10,14 @@
       <timeout>0</timeout>
       <pty>false</pty>
     </org.jvnet.hudson.plugins.CredentialsSSHSite>
+        <org.jvnet.hudson.plugins.CredentialsSSHSite>
+		<hostname>{{ production_ip }}</hostname>
+      <username>vagrant</username>
+      <port>22</port>
+      <credentialId>vagrant</credentialId>
+      <serverAliveInterval>0</serverAliveInterval>
+      <timeout>0</timeout>
+      <pty>false</pty>
+    </org.jvnet.hudson.plugins.CredentialsSSHSite>
   </sites>
 </org.jvnet.hudson.plugins.SSHBuildWrapper_-DescriptorImpl>
