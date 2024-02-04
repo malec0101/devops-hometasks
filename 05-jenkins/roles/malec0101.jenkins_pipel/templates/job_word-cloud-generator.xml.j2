@@ -40,7 +40,7 @@ ls -l artifacts/</command>
     <sp.sd.nexusartifactuploader.NexusArtifactUploader plugin="nexus-artifact-uploader@2.14">
       <nexusVersion>nexus3</nexusVersion>
       <protocol>http</protocol>
-      <nexusUrl>192.168.56.6:8081</nexusUrl>
+      <nexusUrl>{{ nexus_ip }}:8081</nexusUrl>
       <groupId>1</groupId>
       <version>$BUILD_NUMBER</version>
       <repository>word-cloud-build</repository>
@@ -52,13 +52,13 @@ ls -l artifacts/</command>
           <file>artifacts/word-cloud-generator.gz</file>
         </sp.sd.nexusartifactuploader.Artifact>
       </artifacts>
-      <credentialsId>b8a2d0d8-bdca-4720-a5ec-ef7db3c62091</credentialsId>
+      <credentialsId>jenkins</credentialsId>
     </sp.sd.nexusartifactuploader.NexusArtifactUploader>
     <org.jvnet.hudson.plugins.SSHBuilder plugin="ssh@2.6.1">
-      <siteName>vagrant@192.168.56.7:22</siteName>
+	    <siteName>vagrant@{{ staging_ip }}:22</siteName>
       <command>sudo service wordcloud stop
 
-curl -X GET &quot;http://192.168.56.6:8081/repository/word-cloud-build/1/word-cloud-generator/$BUILD_NUMBER/word-cloud-generator-$BUILD_NUMBER.gz&quot; -o /opt/wordcloud/word-cloud-generator.gz --user &quot;$NEXUS_DOWNLOAD_USER:$NEXUS_DOWNLOAD_PASSWORD&quot;
+curl -X GET &quot;http://{{ nexus_ip }}:8081/repository/word-cloud-build/1/word-cloud-generator/$BUILD_NUMBER/word-cloud-generator-$BUILD_NUMBER.gz&quot; -o /opt/wordcloud/word-cloud-generator.gz --user &quot;$NEXUS_DOWNLOAD_USER:$NEXUS_DOWNLOAD_PASSWORD&quot;
 ls -l /opt/wordcloud
 gunzip -f /opt/wordcloud/word-cloud-generator.gz
 chmod +x /opt/wordcloud/word-cloud-generator
@@ -68,12 +68,12 @@ sudo service wordcloud start</command>
       <hideCommand>false</hideCommand>
     </org.jvnet.hudson.plugins.SSHBuilder>
     <hudson.tasks.Shell>
-      <command>res=`curl -s -H &quot;Content-Type: application/json&quot; -d &apos;{&quot;text&quot;:&quot;ths is a really really really important thing this is&quot;}&apos; http://192.168.56.7:8888/version | jq &apos;. | length&apos;`
+      <command>res=`curl -s -H &quot;Content-Type: application/json&quot; -d &apos;{&quot;text&quot;:&quot;ths is a really really really important thing this is&quot;}&apos; http://{{ staging_ip }}:8888/version | jq &apos;. | length&apos;`
 if [ &quot;1&quot; != &quot;$res&quot; ]; then
   exit 99
 fi
 
-res=`curl -s -H &quot;Content-Type: application/json&quot; -d &apos;{&quot;text&quot;:&quot;ths is a really really really important thing this is&quot;}&apos; http://192.168.56.7:8888/api | jq &apos;. | length&apos;`
+res=`curl -s -H &quot;Content-Type: application/json&quot; -d &apos;{&quot;text&quot;:&quot;ths is a really really really important thing this is&quot;}&apos; http://{{ staging_ip }}:8888/api | jq &apos;. | length&apos;`
 if [ &quot;7&quot; != &quot;$res&quot; ]; then
   exit 99
 fi</command>
@@ -91,7 +91,7 @@ fi</command>
     <org.jenkinsci.plugins.credentialsbinding.impl.SecretBuildWrapper plugin="credentials-binding@657.v2b_19db_7d6e6d">
       <bindings>
         <org.jenkinsci.plugins.credentialsbinding.impl.UsernamePasswordMultiBinding>
-          <credentialsId>b8a2d0d8-bdca-4720-a5ec-ef7db3c62091</credentialsId>
+          <credentialsId>jenkins</credentialsId>
           <usernameVariable>NEXUS_DOWNLOAD_USER</usernameVariable>
           <passwordVariable>NEXUS_DOWNLOAD_PASSWORD</passwordVariable>
         </org.jenkinsci.plugins.credentialsbinding.impl.UsernamePasswordMultiBinding>

@@ -1,7 +1,10 @@
  # -*- mode: ruby -*-
  # vi: set ft=ruby :
 
-
+jenkins_ip    = "192.168.56.5"
+nexus_ip      = "192.168.56.6"
+staging_ip    = "192.168.56.7"
+production_ip = "192.168.56.8"
 
 Vagrant.configure("2") do |config|
     config.vm.box = "generic/debian11"
@@ -15,26 +18,26 @@ Vagrant.configure("2") do |config|
 
 
     config.vm.define "nexus.vm" do |nexus|
-        nexus.vm.network "private_network", ip: "192.168.56.6"
+        nexus.vm.network "private_network", ip: nexus_ip
         nexus.vm.hostname = "nexus.vm"
         nexus.vm.provider("virtualbox") { |vb| vb.memory = 1024 }
 
     end
 
     config.vm.define "staging.vm" do |staging|
-        staging.vm.network "private_network", ip: "192.168.56.7"
+        staging.vm.network "private_network", ip: staging_ip
         staging.vm.hostname = "staging.vm"
 
     end
 
     config.vm.define "production.vm" do |production|
-        production.vm.network "private_network", ip: "192.168.56.8"
+        production.vm.network "private_network", ip: production_ip
         production.vm.hostname = "production.vm"
     end
 
 
     config.vm.define "jenkins.vm", primary: true do |jenkins|
-        jenkins.vm.network "private_network", ip: "192.168.56.5"
+        jenkins.vm.network "private_network", ip: jenkins_ip
         jenkins.vm.hostname = "jenkins.vm"
         jenkins.vm.provider("virtualbox") { |vb| vb.memory = 1024 }
 
@@ -45,7 +48,30 @@ Vagrant.configure("2") do |config|
         jenkins.vm.provision "ansible_local" do |ansible|
             ansible.playbook = "playbook.yaml"
             ansible.limit = "all"
-            ansible.inventory_path = "inventory"
+            ansible.host_vars = {
+              "jenkins.vm"    => {"ansible_host": jenkins_ip},
+              "nexus.vm"      => {"ansible_host": nexus_ip,
+                 "ansible_ssh_private_key_file" => "/home/vagrant/private_key_nexus"
+              },
+              "staging.vm"    => {"ansible_host": staging_ip,
+                 "ansible_ssh_private_key_file" => "/home/vagrant/private_key_staging" 
+              },
+              "production.vm" => {"ansible_host": production_ip,
+                 "ansible_ssh_private_key_file" => "/home/vagrant/private_key_production"
+              },
+            }
+            ansible.groups = {
+              "environments" => ["staging.vm", "production.vm"],
+              "all:vars" => {
+                "ansible_connection": "ssh",
+                "ansible_user": "vagrant",
+                "ansible_ssh_common_args": "-o StrictHostKeyChecking=no",
+                "jenkins_ip": jenkins_ip,
+                "nexus_ip":   nexus_ip,
+                "staging_ip": staging_ip,
+                "production_ip": production_ip
+              }
+            }
       end      
    end
 end 

@@ -2,10 +2,10 @@
 <org.jvnet.hudson.plugins.SSHBuildWrapper_-DescriptorImpl plugin="ssh@2.6.1">
   <sites>
     <org.jvnet.hudson.plugins.CredentialsSSHSite>
-      <hostname>192.168.56.7</hostname>
+	    <hostname>{{ staging_ip }}</hostname>
       <username>vagrant</username>
       <port>22</port>
-      <credentialId>537147eb-703a-477e-8246-40f75274dd4d</credentialId>
+      <credentialId>vagrant</credentialId>
       <serverAliveInterval>0</serverAliveInterval>
       <timeout>0</timeout>
       <pty>false</pty>
