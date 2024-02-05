@@ -2,6 +2,9 @@
 - name:  pre_provision
   hosts: all
   tasks:
+  - name: disabled selinux
+    become: yes
+    shell: sed -i 's/^SELINUX=.*/SELINUX=disabled/g' /etc/selinux/config
   - name: 
     become: yes
     replace:
@@ -15,7 +18,6 @@
     yum:
       pkg:
       - mc
-      - sshpass
       - ranger
       - tmux 
       state: present
