@@ -5,6 +5,7 @@
   - name: disabled selinux
     become: yes
     shell: sed -i 's/^SELINUX=.*/SELINUX=disabled/g' /etc/selinux/config
+    before: Restart selinx  
   - name: 
     become: yes
     replace:
@@ -22,10 +23,10 @@
       - tmux 
       state: present
   handlers:
-  - name: Restart sshd
+  - name: Restart selinx
     become: yes
     service:
-      name: sshd
+      name: selinux-autorelabel
       state: restarted
 
         # playbook puppetserver r10k install
