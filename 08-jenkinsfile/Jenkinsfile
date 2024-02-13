@@ -1,30 +1,44 @@
 pipeline {
-  agent {
-    label '!go'
+  
+  agent any
+  
+  tools {
+            go 'Go 1.16'
+        }
+
+  environment {
+      NEXUS_IP="192.168.59.90"
+      STAGING_IP="192.168.59.80"
+      PRODUCTION_IP="192.168.59.85"
   }
+
   options {
       timestamps()
   }
-  environment {
-      NEXUS_IP="192.168.56.90"
-      STAGING_IP="192.168.56.80"
-  }
+
   stages{
-    stage ('Get git repo'){
+      stage ('source code download'){
         steps{
             cleanWs()
             git(
                 branch: 'master',
                 changelog: false,
                 poll: false,
-                url: 'https://github.com/wickett/word-cloud-generator'
+                url: 'https://github.com/malec0101/word-cloud-generator.git'
             )
         }
     }
-    stage ('Build code'){
-        tools {
-            go 'Go 1.16'
+  
+      stage ('source code checking'){
+        steps{
+	    sh '''
+	       make lint
+	       make test
+	    '''
         }
+    }
+    
+      stage ('Build code'){
         steps{
             sh '''
                 echo "{ \\"version\\": \\"1.$BUILD_NUMBER\\" }" >static/version
@@ -36,7 +50,6 @@ pipeline {
 
                 ls -l artifacts/
             '''
-
             nexusArtifactUploader  (
                 artifacts: [
                     [
@@ -46,28 +59,94 @@ pipeline {
                         type: 'gz'
                     ]
                 ], 
-                credentialsId: '9c9a1eb1-f51d-4292-a4f6-a74c3f18b9e8', 
+                credentialsId: 'nexus-creds', 
                 groupId: '1', 
                 nexusUrl: "$NEXUS_IP:8081/", 
                 nexusVersion: 'nexus3', 
                 protocol: 'http', 
-                repository: 'word-cloud-build', 
+                repository: 'word-cloud-app', 
                 version: '$BUILD_NUMBER'
             )
         }
     }
-    stage('Deploy to Staging') {
-        steps {
-            withCredentials([usernamePassword(credentialsId: '9c9a1eb1-f51d-4292-a4f6-a74c3f18b9e8', passwordVariable: 'NEXUS_DOWNLOAD_PASSWORD', usernameVariable: 'NEXUS_DOWNLOAD_USER')]) {
+
+    stage('Deploy to Staging & integration-tests') {
+        stages {
+            stage('Deploy to Staging') {
+	        steps {
+                   withCredentials([usernamePassword(credentialsId: 'nexus-creds', passwordVariable: 'NEXUS_DOWNLOAD_PASSWORD', usernameVariable: 'NEXUS_DOWNLOAD_USER')]) {
                 sh '''
-                    ssh vagrant@$STAGING_IP "sudo systemctl stop wordcloud"
-                    ssh vagrant@$STAGING_IP "curl -X GET -u $NEXUS_DOWNLOAD_USER:$NEXUS_DOWNLOAD_PASSWORD http://$NEXUS_IP:8081/repository/word-cloud-build/1/word-cloud-generator/${BUILD_NUMBER}/word-cloud-generator-${BUILD_NUMBER}.gz -o /opt/wordcloud/word-cloud-generator.gz"
-                    ssh vagrant@$STAGING_IP "gunzip -f /opt/wordcloud/word-cloud-generator.gz"
-                    ssh vagrant@$STAGING_IP "chmod +x /opt/wordcloud/word-cloud-generator"
-                    ssh vagrant@$STAGING_IP "sudo systemctl start wordcloud"
+                    SSHPASS='vagrant' sshpass -e ssh -o StrictHostKeyChecking=no vagrant@$STAGING_IP \
+		    "sudo systemctl stop wordcloud; \
+                    curl -X GET -u $NEXUS_DOWNLOAD_USER:$NEXUS_DOWNLOAD_PASSWORD \
+		    http://$NEXUS_IP:8081/repository/word-cloud-app/1/word-cloud-generator/${BUILD_NUMBER}/word-cloud-generator-${BUILD_NUMBER}.gz \
+		    -o /opt/wordcloud/word-cloud-generator.gz; \
+                    gunzip -f /opt/wordcloud/word-cloud-generator.gz; \
+                    chmod +x /opt/wordcloud/word-cloud-generator; \
+                    sudo systemctl start wordcloud"
                 '''
             }
+	  }  
         }
+            stage('Parallel integration-tests') {
+	        parallel {
+		    stage('tests#1') {
+		        steps{
+			    sh '''
+			       res=`curl -s -H "Content-Type: application/json" \
+			       -d '{"text":"ths is a really really really important thing this is"}' \
+			       http://$STAGING_IP:8888/version | jq '. | length'`
+                               if [ "1" != "$res" ]; then
+                                 exit 99
+                               fi\
+
+                               res=`curl -s -H "Content-Type: application/json" \
+			       -d '{"text":"ths is a really really really important thing this is"}' \
+			       http://$STAGING_IP:8888/api | jq '. | length'`
+                               if [ "7" != "$res" ]; then
+                                 exit 99
+                               fi\
+			    '''
+			}
+		    }
+		    stage('tests#2') {
+		        steps{
+			    sh '''
+			       res=`curl -s -H "Content-Type: application/json" \
+			       -d '{"text":"ths is a really really really important thing this is"}' \
+			       http://$STAGING_IP:8888/version | jq '. | length'`
+                               if [ "1" != "$res" ]; then
+                                 exit 99
+                               fi\
+
+                               res=`curl -s -H "Content-Type: application/json" \
+			       -d '{"text":"ths is a really really really important thing this is"}' \
+			       http://$STAGING_IP:8888/api | jq '. | length'`
+                               if [ "7" != "$res" ]; then
+                                 exit 99
+                               fi\
+			    '''
+			}
+		    }    
+		}
+	    }
+	}
+    }	
+    stage('Deploy to Production') {
+	steps {
+            withCredentials([usernamePassword(credentialsId: 'nexus-creds', passwordVariable: 'NEXUS_DOWNLOAD_PASSWORD', usernameVariable: 'NEXUS_DOWNLOAD_USER')]) {
+                sh '''
+                    SSHPASS='vagrant' sshpass -e ssh -o StrictHostKeyChecking=no vagrant@$PRODUCTION_IP \
+		    "sudo systemctl stop wordcloud; \
+                    curl -X GET -u $NEXUS_DOWNLOAD_USER:$NEXUS_DOWNLOAD_PASSWORD \
+		    http://$NEXUS_IP:8081/repository/word-cloud-app/1/word-cloud-generator/${BUILD_NUMBER}/word-cloud-generator-${BUILD_NUMBER}.gz \
+		    -o /opt/wordcloud/word-cloud-generator.gz; \
+                    gunzip -f /opt/wordcloud/word-cloud-generator.gz; \
+                    chmod +x /opt/wordcloud/word-cloud-generator; \
+                    sudo systemctl start wordcloud"
+                '''
+            }
+	  }  
+        }
+      }	
     }
-  }
-}
