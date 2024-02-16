@@ -62,7 +62,7 @@ pipeline {
                 nexusUrl: "$NEXUS_IP:81/", 
                 nexusVersion: 'nexus3', 
                 protocol: 'http', 
-                repository: 'word-cloud-app', 
+                repository: 'word-cloud-build', 
                 version: '$BUILD_NUMBER'
             )
         }
