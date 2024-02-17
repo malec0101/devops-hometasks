@@ -3,8 +3,8 @@ pipeline {
   agent any
   
   tools {
-            go 'Go 1.16'
-        }
+      go 'Go 1.16'
+  }
 
   environment {
       NEXUS_IP="localhost"
@@ -57,7 +57,7 @@ pipeline {
                         type: 'gz'
                     ]
                 ], 
-                credentialsId: 'nexus-creds', 
+                credentialsId: 'jenkins', 
                 groupId: '1', 
                 nexusUrl: "$NEXUS_IP:81/", 
                 nexusVersion: 'nexus3', 
