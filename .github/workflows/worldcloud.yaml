@@ -10,10 +10,11 @@ jobs:
   build:
     runs-on: self-hosted
     steps:
-      - run: curl -O https://raw.githubusercontent.com/malec0101/devops-hometasks/main/07-docker/Dockerfile.multi; \
-             docker build \
-             -t ${{ env.NAME_IMAGE }}:${{ env.VERSION_IMAGE }} \
-             -t ${{ env.NAME_IMAGE }}:${{ github.sha }} \
-             -f Dockerfile.multi . ; \
+      - run: |
+              curl -O https://raw.githubusercontent.com/malec0101/devops-hometasks/main/07-docker/Dockerfile.multi
+              docker build \
+              -t ${{ env.NAME_IMAGE }}:${{ env.VERSION_IMAGE }} \
+              -t ${{ env.NAME_IMAGE }}:${{ github.sha }} \
+              -f Dockerfile.multi . ; \
       - run: echo ${{ secrets.ACTION_TOKEN }}; echo ${{ github.repository_owner }}; echo ${{ github.sha }}
              
