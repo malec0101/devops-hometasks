@@ -13,4 +13,6 @@ jenkins_plugins:              # имена плагинов стоит указ�
   - golang
   - ssh
   - ws-cleanup
+  - workflow-aggregator # pipeline
+  - timestamper 
 

@@ -1,0 +1,14 @@
+ARG VERSION=2.1 
+FROM jenkins/jenkins:lts-jdk17
+
+USER root
+RUN  apt update && apt install curl gcc make -y; apt clean all
+USER jenkins
+COPY --chown=jenkins:jenkins $PWD/files/jenkins/groovy/user.groovy /usr/share/jenkins/ref/init.groovy.d/01-user.groovy
+COPY --chown=jenkins:jenkins $PWD/files/jenkins/plugins.txt /usr/share/jenkins/ref/plugins.txt
+RUN jenkins-plugin-cli -f /usr/share/jenkins/ref/plugins.txt; \
+    echo ${JENKINS_VERSION} > /usr/share/jenkins/ref/jenkins.install.UpgradeWizard.state; 
+COPY --chown=jenkins:jenkins --chmod=755 $PWD/files/jenkins/jenkins.yaml /usr/share/jenkins/ref/jenkins.yaml
+
+EXPOSE 8080
+ENTRYPOINT ["/bin/tini", "--", "/usr/local/bin/jenkins.sh"]

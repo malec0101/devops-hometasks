@@ -1,0 +1,55 @@
+credentials:
+  system:
+    domainCredentials:
+    - credentials:
+      - usernamePassword:
+          id: "jenkins"
+          password: "jenkins"
+          scope: GLOBAL
+          username: "jenkins"
+      - usernamePassword:
+          id: "vagrant"
+          password: "vagrant"
+          scope: GLOBAL
+          username: "vagrant"
+jenkins:
+  agentProtocols:
+  - "JNLP4-connect"
+  - "Ping"
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+jobs:
+ - script: > 
+     pipelineJob('word-cloud-generator') {
+         definition {
+             cpsScm {
+                 scm {
+                     git {
+                       remote {
+                         url('https://github.com/malec0101/devops-hometasks.git')
+                       }
+                       extensions {
+                         cloneOptions {
+                           noTags(noTags= true)
+                          }
+                      }
+                    }
+                     scriptPath('09-docker-compose/files/jenkins/Jenkinsfile')
+                 }
+             }
+         }
+     } 
+tool:
+  git:
+    installations:
+    - home: "git"
+      name: "Default"
+  go:
+    installations:
+    - name: "Go 1.16"
+      properties:
+      - installSource:
+          installers:
+          - golangInstaller:
+              id: "1.16"

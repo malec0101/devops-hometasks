@@ -1,0 +1,34 @@
+ARG VERSION=2 
+FROM debian:11 as nexus3
+
+RUN \
+     apt update; \
+     apt install -y wget apt-transport-https gpg; \
+     wget -qO - https://packages.adoptium.net/artifactory/api/gpg/key/public | gpg --dearmor | tee /etc/apt/trusted.gpg.d/adoptium.gpg > /dev/null; \
+     echo "deb https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list; \
+     apt update && apt install -y temurin-8-jdk
+COPY $PWD/files/ansible/playbook.yaml playbook.yaml     
+RUN \
+     apt update; \
+     apt install -y gcc python3 rsync; \
+     apt install -y python3-pip; \
+     apt clean all; \
+     pip3 install --upgrade pip; \
+     pip3 install jmespath; \
+     pip3 install ansible; \
+     ansible-galaxy role install ansible-ThoTeam.nexus3-oss; \
+     ansible-playbook playbook.yaml -i "localhost" -c docker
+
+FROM eclipse-temurin:8-jdk-alpine
+RUN addgroup nexus; adduser nexus -D -G nexus;
+COPY --from=nexus3 --chown=nexus:nexus /home/nexus /home/nexus
+COPY --from=nexus3 --chown=nexus:nexus /var/nexus /var/nexus
+COPY --from=nexus3 --chown=nexus:nexus /tmp/nexus /tmp/nexus
+COPY --from=nexus3 --chown=root:root --chmod=0755 /opt/nexus-3.64.0-04 /opt/nexus-3.64.0-04  
+COPY --from=nexus3 --chown=root:root --chmod=0755 /opt/sonatype-work /opt/sonatype-work
+RUN ln -s /opt/java/openjdk/bin/java /bin/java; ln -s /opt/nexus-3.64.0-04 /opt/nexus-latest && chown nexus:nexus /opt/nexus-latest
+USER nexus
+ENV INSTALL4J_JAVA_HOME_OVERRIDE=/opt/java/openjdk
+EXPOSE 8081
+EXPOSE 81
+CMD ["/opt/nexus-latest/bin/nexus", "run"]
