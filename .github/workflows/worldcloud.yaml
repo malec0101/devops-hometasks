@@ -1,7 +1,8 @@
 name: Worldcloud
 
 on:
-  workflow_dispatch
+  push:
+  workflow_dispatch:
 env:
   NAME_IMAGE: wcg
   VERSION_IMAGE: latest  
