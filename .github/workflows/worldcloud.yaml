@@ -37,7 +37,7 @@ jobs:
        name: Build and push
        uses: docker/build-push-action@v5
        with:
-         context: ${{ URL_DOCKERFILE }}
+         context: ${{ env.URL_DOCKERFILE }}
          platforms: linux/amd64
          push: true
          tags: |
