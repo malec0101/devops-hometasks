@@ -7,7 +7,7 @@ env:
   NAME_IMAGE: wcg
   VERSION_IMAGE: latest  
 jobs:
-  login:
+  Build_Push:
    runs-on: self-hosted
    steps:
      -
@@ -17,24 +17,23 @@ jobs:
          registry: ghcr.io
          username: ${{ github.repository_owner }}
          password: ${{ secrets.GITHUB_TOKEN }}
-  build:
-    runs-on: self-hosted
-    steps:
-      - run: |
-              echo "----
-              Download Dockerfile
-              --->"
-              curl -O https://raw.githubusercontent.com/malec0101/devops-hometasks/main/07-docker/Dockerfile.multi
-              echo "----
-              Build image
-              --->"
-              docker build \
-              -t ${{ env.NAME_IMAGE }}:${{ env.VERSION_IMAGE }} \
-              -t ${{ env.NAME_IMAGE }}:${{ github.sha }} \
-              -f Dockerfile.multi . 
-  push:
-   runs-on: self-hosted
-   steps:
-      - run: |
-              docker images
-              docker push
+     - 
+       #       run: |
+       #     echo "----
+       #     Download Dockerfile
+       #     --->"
+       #     curl -O https://raw.githubusercontent.com/malec0101/devops-hometasks/main/07-docker/Dockerfile.multi
+       #     echo "----
+       #     Build image
+       #     --->"
+       #     docker build \
+       #     -t ${{ env.NAME_IMAGE }}:${{ env.VERSION_IMAGE }} \
+       #     -t ${{ env.NAME_IMAGE }}:${{ github.sha }} \
+       #     -f Dockerfile.multi .
+     
+       name: Build and push
+       uses: docker/build-push-action@v5
+       with:
+         context: https://raw.githubusercontent.com/malec0101/devops-hometasks/main/07-docker/Dockerfile.multi
+         push: true
+         tags: ${{ env.NAME_IMAGE }}:${{ env.VERSION_IMAGE }},${{ env.NAME_IMAGE }}:${{ github.sha }}
