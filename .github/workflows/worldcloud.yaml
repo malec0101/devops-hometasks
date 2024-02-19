@@ -1,4 +1,4 @@
-name: Worldcloud
+name: CI World-cloud-generator
 
 on:
   push:
@@ -7,14 +7,32 @@ env:
   NAME_IMAGE: wcg
   VERSION_IMAGE: latest  
 jobs:
+  login:
+   runs-on: self-hosted
+   steps:
+     -
+       name: Checkout
+       uses: actions/checkout@v2
+     -
+       name: Login to GitHub Package Registry
+       uses: docker/login-action@v1
+       with:
+         registry: ghcr.io
+         username: ${{ github.repository_owner }}
+         password: ${{ secrets.GHCR_TOKEN }}
   build:
     runs-on: self-hosted
     steps:
       - run: |
+              echo "----
+              Download Dockerfile
+              --->"
               curl -O https://raw.githubusercontent.com/malec0101/devops-hometasks/main/07-docker/Dockerfile.multi
+              echo "----
+              Build image
+              --->"
               docker build \
               -t ${{ env.NAME_IMAGE }}:${{ env.VERSION_IMAGE }} \
               -t ${{ env.NAME_IMAGE }}:${{ github.sha }} \
-              -f Dockerfile.multi . ; \
-      - run: echo ${{ secrets.ACTION_TOKEN }}; echo ${{ github.repository_owner }}; echo ${{ github.sha }}
+              -f Dockerfile.multi . 
              
