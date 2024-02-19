@@ -32,4 +32,9 @@ jobs:
               -t ${{ env.NAME_IMAGE }}:${{ env.VERSION_IMAGE }} \
               -t ${{ env.NAME_IMAGE }}:${{ github.sha }} \
               -f Dockerfile.multi . 
-             
+  push:
+   runs-on: self-hosted
+   steps:
+      - run: |
+              docker images
+              docker push
