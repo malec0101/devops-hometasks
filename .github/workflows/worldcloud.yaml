@@ -3,9 +3,12 @@ name: CI World-cloud-generator
 on:
   push:
   workflow_dispatch:
+
 env:
   NAME_IMAGE: wcg
-  VERSION_IMAGE: latest  
+  VERSION_IMAGE: latest
+  URL_DOCKERFILE: https://raw.githubusercontent.com/malec0101/devops-hometasks/main/07-docker/Dockerfile.multi
+
 jobs:
   Build_Push:
    runs-on: self-hosted
@@ -34,7 +37,9 @@ jobs:
        name: Build and push
        uses: docker/build-push-action@v5
        with:
-         context: https://raw.githubusercontent.com/malec0101/devops-hometasks/main/07-docker/Dockerfile.multi
+         context: ${{ URL_DOCKERFILE }}
          platforms: linux/amd64
          push: true
-         tags: ${{ env.NAME_IMAGE }}:${{ env.VERSION_IMAGE }},${{ env.NAME_IMAGE }}:${{ github.sha }}
+         tags: |
+           ghcr.io/${{ github.repository_owner }}/${{ env.NAME_IMAGE }}:${{ env.VERSION_IMAGE }}
+           ghcr.io/${{ github.repository_owner }}/${{ env.NAME_IMAGE }}:${{ github.sha }}
