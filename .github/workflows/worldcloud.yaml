@@ -12,6 +12,9 @@ env:
 jobs:
   Build_Push:
    runs-on: self-hosted
+   permissions:
+     contents: read
+     packages: write
    steps:
      -
        name: Login to GitHub Package Registry
