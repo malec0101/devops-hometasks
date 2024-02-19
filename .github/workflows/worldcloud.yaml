@@ -44,5 +44,6 @@ jobs:
        uses: docker/build-push-action@v5
        with:
          context: https://raw.githubusercontent.com/malec0101/devops-hometasks/main/07-docker/Dockerfile.multi
+         platforms: linux/amd64
          push: true
          tags: ${{ env.NAME_IMAGE }}:${{ env.VERSION_IMAGE }},${{ env.NAME_IMAGE }}:${{ github.sha }}
