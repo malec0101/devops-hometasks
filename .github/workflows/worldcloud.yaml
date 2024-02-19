@@ -11,7 +11,7 @@ env:
 
 jobs:
   Build_Push:
-   runs-on: self-hosted
+   runs-on: ubuntu-latest
    permissions:
      contents: read
      packages: write
@@ -24,19 +24,6 @@ jobs:
          username: ${{ github.repository_owner }}
          password: ${{ secrets.GITHUB_TOKEN }}
      - 
-       #       run: |
-       #     echo "----
-       #     Download Dockerfile
-       #     --->"
-       #     curl -O https://raw.githubusercontent.com/malec0101/devops-hometasks/main/07-docker/Dockerfile.multi
-       #     echo "----
-       #     Build image
-       #     --->"
-       #     docker build \
-       #     -t ${{ env.NAME_IMAGE }}:${{ env.VERSION_IMAGE }} \
-       #     -t ${{ env.NAME_IMAGE }}:${{ github.sha }} \
-       #     -f Dockerfile.multi .
-     
        name: Build and push
        uses: docker/build-push-action@v5
        with:
@@ -44,5 +31,5 @@ jobs:
          platforms: linux/amd64
          push: true
          tags: |
-           ${{ env.NAME_IMAGE }}:${{ env.VERSION_IMAGE }}
-           ${{ env.NAME_IMAGE }}:${{ github.sha }}
+           ghcr.io/${{ github.repository_owner }}/${{ env.NAME_IMAGE }}:${{ env.VERSION_IMAGE }}
+           ghcr.io/${{ github.repository_owner }}/${{ env.NAME_IMAGE }}:${{ github.sha }}
