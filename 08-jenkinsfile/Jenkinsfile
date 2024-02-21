@@ -80,9 +80,9 @@ pipeline {
 		    "sudo systemctl stop wordcloud; \
                     curl -X GET -u $NEXUS_DOWNLOAD_USER:$NEXUS_DOWNLOAD_PASSWORD \
 		    http://$NEXUS_IP:8081/repository/word-cloud-app/1/word-cloud-generator/${BUILD_NUMBER}/word-cloud-generator-${BUILD_NUMBER}.gz \
-		    -o /opt/wordcloud/word-cloud-generator.gz; \
-                    gunzip -f /opt/wordcloud/word-cloud-generator.gz; \
-                    chmod +x /opt/wordcloud/word-cloud-generator; \
+		    -o /opt/word-cloud-generator.gz; \
+                    gunzip -f /opt/word-cloud-generator.gz; \
+                    chmod +x /opt/word-cloud-generator; \
                     sudo systemctl start wordcloud"
                 '''
             }
@@ -140,9 +140,9 @@ pipeline {
 		    "sudo systemctl stop wordcloud; \
                     curl -X GET -u $NEXUS_DOWNLOAD_USER:$NEXUS_DOWNLOAD_PASSWORD \
 		    http://$NEXUS_IP:8081/repository/word-cloud-app/1/word-cloud-generator/${BUILD_NUMBER}/word-cloud-generator-${BUILD_NUMBER}.gz \
-		    -o /opt/wordcloud/word-cloud-generator.gz; \
-                    gunzip -f /opt/wordcloud/word-cloud-generator.gz; \
-                    chmod +x /opt/wordcloud/word-cloud-generator; \
+		    -o /opt/word-cloud-generator.gz; \
+                    gunzip -f /opt/word-cloud-generator.gz; \
+                    chmod +x /opt/word-cloud-generator; \
                     sudo systemctl start wordcloud"
                 '''
             }
