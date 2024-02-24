@@ -1,0 +1,1 @@
+- Ingress предоставляет доступ по адресу http://wcg.by и http://wcg.by/wcg 

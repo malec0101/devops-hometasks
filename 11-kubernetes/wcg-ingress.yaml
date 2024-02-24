@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minimal-ingress
+  labels:
+    app: word-cloud-generator
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: wcg.by
+    http:
+      paths:
+      - path: /wcg
+        pathType: Prefix
+        backend:
+          service:
+            name: word-cloud-generator-service
+            port:
+              number: 8888 # просто проверка, как работает ingress с портами 
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: word-cloud-generator-service
+            port:
+              number: 80 # доступны оба порта из service wcg

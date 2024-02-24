@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app.word-cloud-generator
+  labels: 
+    app: word-cloud-generator 
+spec:
+  selector:
+    matchLabels:
+      app: word-cloud-generator
+  template:
+    metadata:
+      labels:
+        app: word-cloud-generator
+    spec:
+      containers:
+      - name: wcg
+        image: ghcr.io/malec0101/wcg:latest
+        ports:
+        - containerPort: 8888
+
