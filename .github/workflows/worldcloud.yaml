@@ -8,8 +8,6 @@ env:
   NAME_IMAGE: wcg
   VERSION_IMAGE: latest
   URL_DOCKERFILE: https://raw.githubusercontent.com/malec0101/devops-hometasks/main/07-docker/Dockerfile.multi
-
-secrets:
   ACTION_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
@@ -30,7 +28,7 @@ jobs:
        with:
          registry: ghcr.io
          username: ${{ github.repository_owner }}
-         password: ${{ secrets.ACTION_TOKEN }}
+         password: ${{ env.ACTION_TOKEN }}
      - 
        name: Build and push
        uses: docker/build-push-action@v5
