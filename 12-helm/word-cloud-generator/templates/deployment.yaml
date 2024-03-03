@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "wcg.name" . }}-deploy
+  labels: 
+    app: {{ template "wcg.name" . }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ template "wcg.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "wcg.name" . }}
+    spec:
+      containers:
+      - name: {{ .Values.container.name }}
+        image: {{ .Values.image.imageRegistry }}/{{ .Values.image.repository }}/wcg:{{ .Values.image.tag }}
+        ports:
+        - containerPort: {{ .Values.container.port }}
+
