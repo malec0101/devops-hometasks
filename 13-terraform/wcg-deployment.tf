@@ -23,8 +23,8 @@ resource "kubernetes_deployment" "app_word_cloud_generator" {
 
       spec {
         container {
-          name  = "wcg"
-          image = "ghcr.io/malec0101/wcg:latest"
+          name  = var.spec_container.name
+          image = var.spec_container.image
 
           port {
             container_port = var.spec_container.target_port
