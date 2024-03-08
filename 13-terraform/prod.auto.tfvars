@@ -6,7 +6,7 @@ names_res_kub = {
 
 }
 
-labels = "word-cloud-generator" # in vars.tf  
+labels = "word-cloud-generator" # default var in vars.tf file 
 
 spec_container = {
     
