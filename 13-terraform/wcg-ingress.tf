@@ -1,4 +1,4 @@
-resource "kubernetes_ingress_v1" "minimal_ingress" {
+resource "kubernetes_ingress_v1" "wcg_ingress" {
   metadata {
     name = var.names_res_kub.ingress
 
