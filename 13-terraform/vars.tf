@@ -5,6 +5,7 @@ variable "names_res_kub" {
     ingress    = string
     deployment = string
   })
+
 }
 
 variable "labels" {
