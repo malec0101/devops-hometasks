@@ -1,4 +1,5 @@
 resource "github_repository_file" "gh_sync" {
+  
   for_each = {
     file1 = "config.tf",
     file2 = "gh_sync_files.tf",
