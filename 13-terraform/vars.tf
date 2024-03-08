@@ -30,7 +30,4 @@ variable "spec_ingress" {
   })
 }
 
-variable "github_owner" {
-  type = string
-}
 variable "tf_token" {}
