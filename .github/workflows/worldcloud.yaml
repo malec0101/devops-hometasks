@@ -1,7 +1,11 @@
 name: CI World-cloud-generator
 
 on:
-  push:
+  pull_request:
+    types: 
+      - closed
+    branches:
+      - feature
   workflow_dispatch:
 
 env:
@@ -11,7 +15,8 @@ env:
   ACTION_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  Build_Push:
+  CI:
+   if: github.event.pull_request.merged == true 
    runs-on: ubuntu-latest
    permissions:
      contents: read
@@ -39,3 +44,15 @@ jobs:
          tags: |
            ghcr.io/${{ steps.string.outputs.lowercase }}/${{ env.NAME_IMAGE }}:${{ env.VERSION_IMAGE }}
            ghcr.io/${{ steps.string.outputs.lowercase }}/${{ env.NAME_IMAGE }}:${{ github.sha }}
+     -
+       uses: actions/checkout@v3
+       with:
+         ref: ${{ github.event.pull_request.merge_commit_sha }}
+         fetch-depth: '0'
+     -
+       name: Bump version and push tag
+       uses: anothrNick/github-tag-action@1.64.0 # Don't use @master or @v1 unless you're happy to test the latest version
+       env:
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # if you don't want to set write permissions use a PAT token
+         WITH_V: true
+         PRERELEASE: true 
