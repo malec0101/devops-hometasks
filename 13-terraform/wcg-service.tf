@@ -1,5 +1,6 @@
 resource "kubernetes_service" "word_cloud_generator_service" {
   metadata {
+
     name = var.names_res_kub.service
 
     labels = {
