@@ -20,7 +20,7 @@ env:
   
   TAG_INITIAL_VERSION: 1.0.0
   TAG_DEFAULT_BUMP: patch  
-  TAG_BRANCHES: feature # the name of the branch to which the tag will be applied
+  TAG_BRANCHES: main # the name of the branch to which the tag will be applied
   TAG_PRERELEASE: false # appl tag PRERELEASE 
 
 jobs:
