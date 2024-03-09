@@ -103,4 +103,4 @@ jobs:
        uses: helm/chart-releaser-action@v1.6.0
        env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          charts_dir: ./12-helm 
+          charts_dir: 12-helm
