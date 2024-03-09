@@ -1,6 +1,0 @@
----
-- name: Restart jenkins
-  become: yes
-  ansible.builtin.systemd:
-    name: jenkins
-    state: restarted

@@ -1,6 +1,0 @@
----
-- name: restart Apache
-  become: yes 
-  service:
-    name: apache2
-    state: restarted

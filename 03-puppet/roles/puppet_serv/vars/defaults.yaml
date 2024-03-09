@@ -1,8 +1,0 @@
----
-test_vm: "no" # 256mb ram by puppetserv --default "no"
-autosign: "false" # autosign ssl sert 'agent > server' 
-puppetserver_name: "master.puppet"  
-
-
-disable_default: true
-  

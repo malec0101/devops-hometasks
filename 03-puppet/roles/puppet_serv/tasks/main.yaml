@@ -1,8 +1,0 @@
-- name: Install puppetserv
-  import_tasks: puppetserv_install.yaml
-- name: Configure puppetserv 
-  import_tasks: puppetserv_conf.yaml
-
-
-
-

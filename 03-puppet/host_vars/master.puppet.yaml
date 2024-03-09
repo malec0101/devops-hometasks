@@ -1,6 +1,0 @@
-test_vm: "yes" # 256mb ram by puppetserv --default "no"
-puppetserver_name: "master.puppet" # by puppet_agent on vm puppetserv 
-remote_repo_for_r10k: "'https://github.com/malec0101/Master-of-puppets.git'"
-runinterval: "2m" # by puppet_agent on puppetserv
-
-disable_default: true

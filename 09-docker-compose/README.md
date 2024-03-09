@@ -1,2 +1,0 @@
-- Jenkins & Nexus login:password admin admin
-- Nexus user uploader jenkins:jenkins (login:pass)

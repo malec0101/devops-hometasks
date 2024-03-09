@@ -1,7 +1,0 @@
----
-puppetserver_name: "master.puppet" # by /etc/hosts 
-puppetserver_ip: "192.168.56.5"  # by /etc/hosts
-runinterval: "1m" # by puppet_agent 
-environment: "production" 
-
-  

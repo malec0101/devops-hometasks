@@ -1,5 +1,0 @@
-app_user: "vagrant"
-http_host: "static"
-http_conf: "html_site.conf"
-http_port: "8080"
-disable_default: true

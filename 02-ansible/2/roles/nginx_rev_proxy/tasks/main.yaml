@@ -1,4 +1,0 @@
-- name: Install nginx
-  import_tasks: nginx_install.yaml
-- name: rev_proxy 
-  import_tasks: rev_proxy.yaml   
