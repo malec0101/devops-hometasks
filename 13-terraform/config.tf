@@ -15,6 +15,7 @@ terraform {
     secret_suffix = "state"
     config_path   = "~/.kube/config"
   }
+
 }
 
 provider "kubernetes" {
