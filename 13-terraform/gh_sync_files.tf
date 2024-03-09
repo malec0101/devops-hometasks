@@ -10,10 +10,10 @@ resource "github_repository_file" "gh_sync" {
     file7 = "wcg-service.tf"
   }
 
-  repository          = "devops-hometasks"
+  repository          = var.gh_sync.repository 
   file                = "13-terraform/${each.value}"
   content             = file("${each.value}")
-  branch              = "main"
+  branch              = var.gh_sync.branch
   overwrite_on_create = true
   commit_message      = "Managed by Terraform"
 
