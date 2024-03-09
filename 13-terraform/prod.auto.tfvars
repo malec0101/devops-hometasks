@@ -26,3 +26,10 @@ spec_ingress = {
     path_type   = "Prefix"
 
   }
+
+gh_sync = {
+
+    repository = "devops-hometasks"
+    branch     = "main"
+
+}  
