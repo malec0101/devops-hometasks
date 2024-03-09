@@ -31,4 +31,11 @@ variable "spec_ingress" {
   })
 }
 
+variable "gh_sync" {
+  type = object({
+    repository = string
+    branch     = string
+  })
+}
+
 variable "tf_token" {}
