@@ -97,6 +97,14 @@ jobs:
        if: steps.list-changed.outputs.changed == 'true'
        run: ct lint --target-branch ${{ github.event.repository.default_branch }}
      -
+       name: Create kind cluster
+       if: steps.list-changed.outputs.changed == 'true'
+       uses: helm/kind-action@v1.8.0
+     -
+       name: Run chart-testing (install)
+       if: steps.list-changed.outputs.changed == 'true'
+       run: ct install --target-branch ${{ github.event.repository.default_branch }}     
+     -
        name: Checkout
        uses: actions/checkout@v3 
      -
@@ -110,3 +118,5 @@ jobs:
        env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           charts_dir: 12-helm
+          config: ct.yaml
+          version: ${{ steps.tag_version.outputs.new_tag }}
