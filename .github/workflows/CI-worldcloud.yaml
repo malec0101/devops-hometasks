@@ -68,7 +68,10 @@ jobs:
            ghcr.io/${{ steps.string.outputs.lowercase }}/${{ env.NAME_IMAGE }}:${{ env.VERSION_IMAGE }}
            ghcr.io/${{ steps.string.outputs.lowercase }}/${{ env.NAME_IMAGE }}:${{ steps.tag_version.outputs.new_tag }}
            ghcr.io/${{ steps.string.outputs.lowercase }}/${{ env.NAME_IMAGE }}:${{ github.sha }}          
-     - 
+     -
+       name: Checkout
+       uses: actions/checkout@v3      
+     -
        name: Set up Helm
        uses: azure/setup-helm@v3
        with:
@@ -93,6 +96,9 @@ jobs:
        name: Run chart-testing (lint)
        if: steps.list-changed.outputs.changed == 'true'
        run: ct lint --target-branch ${{ github.event.repository.default_branch }}
+     -
+       name: Checkout
+       uses: actions/checkout@v3 
      -
        name: Configure Git
        run: |
