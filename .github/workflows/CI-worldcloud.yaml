@@ -7,26 +7,49 @@ on:
     branches:
       - feature
   workflow_dispatch:
+permissions:
+    contents: write
+    packages: write   
+    pages: write  
 
 env:
   NAME_IMAGE: wcg
   VERSION_IMAGE: latest
   URL_DOCKERFILE: https://raw.githubusercontent.com/malec0101/devops-hometasks/main/07-docker/Dockerfile.multi
   ACTION_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
+  TAG_INITIAL_VERSION: 1.0.0
+  TAG_DEFAULT_BUMP: patch  
+  TAG_BRANCHES: feature # the name of the branch to which the tag will be applied
+  TAG_PRERELEASE: false # appl tag PRERELEASE 
 
 jobs:
   CI:
     #if: github.event.pull_request.merged == true 
    runs-on: ubuntu-latest
-   permissions:
-     contents: read
-     packages: write
    steps:
      -
-       id: string
-       uses: ASzc/change-string-case-action@v6
+       uses: actions/checkout@v3
        with:
-         string: ${{ github.repository_owner }}
+         ref: ${{ github.event.pull_request.merge_commit_sha }}
+         fetch-depth: '0'
+     -
+       name: Bump version and push tag
+       id: tag_version  
+       uses: anothrNick/github-tag-action@1.64.0 # Don't use @master or @v1 unless you're happy to test the latest version
+       env:
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # if you don't want to set write permissions use a PAT token
+           #WITH_V: true
+         DEFAULT_BUMP: ${{ env.TAG_DEFAULT_BUMP }}  
+         INITIAL_VERSION: ${{ env.TAG_INITIAL_VERSION }}  
+         PRERELEASE: ${{ env.TAG_PRERELEASE }}
+         RELEASE_BRANCHES: ${{ env.TAG_BRANCHES }}  
+         NONE_STRING_TOKEN: ${{ github.run_number }}"  
+     -
+      id: string
+      uses: ASzc/change-string-case-action@v6
+      with:
+        string: ${{ github.repository_owner }}
      -
        name: Login to GitHub Package Registry
        uses: docker/login-action@v3
@@ -43,16 +66,43 @@ jobs:
          push: true
          tags: |
            ghcr.io/${{ steps.string.outputs.lowercase }}/${{ env.NAME_IMAGE }}:${{ env.VERSION_IMAGE }}
-           ghcr.io/${{ steps.string.outputs.lowercase }}/${{ env.NAME_IMAGE }}:${{ github.sha }}
-     -
-       uses: actions/checkout@v3
+           ghcr.io/${{ steps.string.outputs.lowercase }}/${{ env.NAME_IMAGE }}:${{ steps.tag_version.outputs.new_tag }}
+           ghcr.io/${{ steps.string.outputs.lowercase }}/${{ env.NAME_IMAGE }}:${{ github.sha }}          
+     - 
+       name: Set up Helm
+       uses: azure/setup-helm@v3
        with:
-         ref: ${{ github.event.pull_request.merge_commit_sha }}
-         fetch-depth: '0'
+         version: v3.12.1
+     -  
+       uses: actions/setup-python@v4
+       with:
+         python-version: '3.10'
+         check-latest: true
      -
-       name: Bump version and push tag
-       uses: anothrNick/github-tag-action@1.64.0 # Don't use @master or @v1 unless you're happy to test the latest version
+       name: Set up chart-testing
+       uses: helm/chart-testing-action@v2.6.0
+     -
+       name: Run chart-testing (list-changed)
+       id: list-changed
+       run: |
+             changed=$(ct list-changed --target-branch ${{ github.event.repository.default_branch }})
+             if [[ -n "$changed" ]]; then
+               echo "changed=true" >> "$GITHUB_OUTPUT"
+             fi
+     -
+       name: Run chart-testing (lint)
+       if: steps.list-changed.outputs.changed == 'true'
+       run: ct lint --target-branch ${{ github.event.repository.default_branch }}
+     -
+       name: Configure Git
+       run: |
+             git config user.name "$GITHUB_ACTOR"
+             git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+     -
+       name: Install Helm
+       uses: azure/setup-helm@v3
+     -
+       name: Run chart-releaser
+       uses: helm/chart-releaser-action@v1.6.0
        env:
-         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # if you don't want to set write permissions use a PAT token
-         WITH_V: true
-         PRERELEASE: true 
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
