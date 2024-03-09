@@ -1,7 +1,6 @@
 resource "kubernetes_deployment" "app_word_cloud_generator" {
   metadata {
     name = var.names_res_kub.deployment 
-
     labels = {
       app = var.labels
     }
