@@ -87,7 +87,7 @@ jobs:
          check-latest: true
      -
        name: Run chart-testing (lint)
-       run: heln lint ${{ env.CHARTS_DIR }} 
+       run: helm lint ${{ env.CHARTS_DIR }} 
      -
        name: Checkout
        uses: actions/checkout@v3 
