@@ -1,19 +1,11 @@
 ---
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: wcg
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: 'https://malec0101.github.io/devops-hometasks/'
-    targetRevision: 1.0.2
-    chart: word-cloud-generator
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: argocd
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+helmCharts:
+- name: wcg
+  repo: https://malec0101.github.io/devops-hometasks
+  version: "1.0.2"
+  releaseName: word-cloud-generator
+  namespace: default
+  valuesFile: values.yaml
