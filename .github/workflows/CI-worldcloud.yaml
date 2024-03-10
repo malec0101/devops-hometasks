@@ -89,7 +89,10 @@ jobs:
              sed -i 's/version: .*/version: ${{ steps.tag_version.outputs.new_tag }}/' 12-helm/wcg/Chart.yaml  
      -
        name: Run chart-package
-       run: helm package 12-helm/wcg -d 12-helm/.cr-releas-packages --version ${{ steps.tag_version.outputs.new_tag }}
+       run: |
+             helm package 12-helm/wcg -d 12-helm/.cr-releas-packages --version ${{ steps.tag_version.outputs.new_tag }}
+             ls -la
+             ls -la 12-helm/.cr-releas-packages
      -
         name: Configure Git
         run: |
