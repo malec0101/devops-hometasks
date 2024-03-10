@@ -16,7 +16,7 @@ image:
 ingress:
   nameIngress: wcg-ingress
   annotations:
-    rewrite_target: /  # nginx.ingress.kubernetes.io/rewrite-target
+    rewrite_target: / # nginx.ingress.kubernetes.io/rewrite-target
   host: wcg.by
   path: /
   pathType: Prefix

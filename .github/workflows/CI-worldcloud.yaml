@@ -23,7 +23,7 @@ env:
   TAG_BRANCHES: main # the name of the branch to which the tag will be applied
   TAG_PRERELEASE: false # appl tag PRERELEASE 
 
-  CHARTS_DIR: 12-helm  
+  CHARTS_DIR: 12-helm/wcg  
 
 jobs:
   CI:
