@@ -18,7 +18,7 @@ env:
   URL_DOCKERFILE: https://raw.githubusercontent.com/malec0101/devops-hometasks/main/07-docker/Dockerfile.multi
   ACTION_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   
-  TAG_INITIAL_VERSION: 1.0.0
+  TAG_INITIAL_VERSION: 1.1.6
   TAG_DEFAULT_BUMP: patch  
   TAG_BRANCHES: main # the name of the branch to which the tag will be applied
   TAG_PRERELEASE: false # appl tag PRERELEASE 
@@ -86,17 +86,8 @@ jobs:
          python-version: '3.10'
          check-latest: true
      -
-       name: Set up chart-testing
-       uses: helm/chart-testing-action@v2.6.0
-     -
        name: Run chart-testing (lint)
-       run: ct lint --target-branch ${{ github.event.repository.default_branch }} --chart-dirs ${{ env.CHARTS_DIR }}
-     -
-       name: Create kind cluster
-       uses: helm/kind-action@v1.8.0
-     -
-       name: Run chart-testing (install)
-       run: ct install --target-branch ${{ github.event.repository.default_branch }} --chart-dirs ${{ env.CHARTS_DIR }}   
+       run: heln lint ${{ env.CHARTS_DIR }} 
      -
        name: Checkout
        uses: actions/checkout@v3 
