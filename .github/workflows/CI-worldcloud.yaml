@@ -70,12 +70,7 @@ jobs:
            ghcr.io/${{ steps.string.outputs.lowercase }}/${{ env.NAME_IMAGE }}:${{ env.VERSION_IMAGE }}
            ghcr.io/${{ steps.string.outputs.lowercase }}/${{ env.NAME_IMAGE }}:${{ steps.tag_version.outputs.new_tag }}
            ghcr.io/${{ steps.string.outputs.lowercase }}/${{ env.NAME_IMAGE }}:${{ github.sha }}          
-     -
-       name: Checkout
-       uses: actions/checkout@v3      
-       with:
-          fetch-depth: 0  
-     -
+     -      
        name: Set up Helm
        uses: azure/setup-helm@v3
        with:
@@ -96,15 +91,10 @@ jobs:
        name: Run chart-package
        run: helm package 12-helm/wcg -d 12-helm/.cr-releas-packages --version ${{ steps.tag_version.outputs.new_tag }}
      -
-       name: Checkout
-       uses: actions/checkout@v3 
-       with:
-          fetch-depth: 0
-     -
-       name: Configure Git
-       run: |
-             git config user.name "$GITHUB_ACTOR"
-             git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+        name: Configure Git
+        run: |
+              git config user.name "$GITHUB_ACTOR"
+              git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
      -
        name: Run chart-releaser
        uses: helm/chart-releaser-action@v1.6.0
