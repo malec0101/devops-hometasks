@@ -89,6 +89,9 @@ jobs:
        name: Run chart-testing (lint)
        run: helm lint ${{ env.CHARTS_DIR }} 
      -
+       name: Run chart-package
+       run: helm package 12-helm/wcg -d 12-helm/.cr-releas-packages --version ${{ steps.tag_version.outputs.new_tag }}
+     -
        name: Checkout
        uses: actions/checkout@v3 
        with:
@@ -103,9 +106,9 @@ jobs:
        uses: helm/chart-releaser-action@v1.6.0
        env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          CR_SKIP_EXISTING: true  
+          CR_SKIP_EXISTING: false  
        with:     
           charts_dir: ${{ env.CHARTS_DIR }}
-          packages_with_index:
+          skip_packaging: true  
           pages_branch: gh-pages 
           config: cr.yaml
