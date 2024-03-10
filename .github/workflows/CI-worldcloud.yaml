@@ -115,5 +115,6 @@ jobs:
           CR_SKIP_EXISTING: true  
        with:     
           charts_dir: ${{ env.CHARTS_DIR }}
-          package-path: .cr-release-packages  
+          packages_with_index:
+          pages_branch: gh-pages 
           config: cr.yaml
