@@ -7,26 +7,52 @@ on:
     branches:
       - feature
   workflow_dispatch:
+permissions:
+    contents: write
+    packages: write   
+    pages: write  
 
 env:
   NAME_IMAGE: wcg
   VERSION_IMAGE: latest
   URL_DOCKERFILE: https://raw.githubusercontent.com/malec0101/devops-hometasks/main/07-docker/Dockerfile.multi
   ACTION_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
+  TAG_INITIAL_VERSION: 1.0.1
+  TAG_DEFAULT_BUMP: patch  
+  TAG_BRANCHES: gh-pages # the name of the branch to which the tag will be applied
+  TAG_PRERELEASE: false # appl tag PRERELEASE 
+
+  CHARTS_DIR: 12-helm/wcg  
 
 jobs:
   CI:
     #if: github.event.pull_request.merged == true 
    runs-on: ubuntu-latest
-   permissions:
-     contents: read
-     packages: write
    steps:
      -
-       id: string
-       uses: ASzc/change-string-case-action@v6
+       uses: actions/checkout@v3
        with:
-         string: ${{ github.repository_owner }}
+         ref: ${{ github.event.pull_request.merge_commit_sha }}
+         fetch-depth: '0'
+     -
+       name: Bump version and push tag
+       id: tag_version  
+       uses: anothrNick/github-tag-action@1.64.0 # Don't use @master or @v1 unless you're happy to test the latest version
+       env:
+         GIT_API_TAGGING: false
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # if you don't want to set write permissions use a PAT token
+           #WITH_V: true
+         DEFAULT_BUMP: ${{ env.TAG_DEFAULT_BUMP }}  
+         INITIAL_VERSION: ${{ env.TAG_INITIAL_VERSION }}  
+         PRERELEASE: ${{ env.TAG_PRERELEASE }}
+         RELEASE_BRANCHES: ${{ env.TAG_BRANCHES }}  
+         NONE_STRING_TOKEN: ${{ github.run_number }}"  
+     -
+      id: string
+      uses: ASzc/change-string-case-action@v6
+      with:
+        string: ${{ github.repository_owner }}
      -
        name: Login to GitHub Package Registry
        uses: docker/login-action@v3
@@ -43,16 +69,46 @@ jobs:
          push: true
          tags: |
            ghcr.io/${{ steps.string.outputs.lowercase }}/${{ env.NAME_IMAGE }}:${{ env.VERSION_IMAGE }}
-           ghcr.io/${{ steps.string.outputs.lowercase }}/${{ env.NAME_IMAGE }}:${{ github.sha }}
-     -
-       uses: actions/checkout@v3
+           ghcr.io/${{ steps.string.outputs.lowercase }}/${{ env.NAME_IMAGE }}:${{ steps.tag_version.outputs.new_tag }}
+           ghcr.io/${{ steps.string.outputs.lowercase }}/${{ env.NAME_IMAGE }}:${{ github.sha }}          
+     -      
+       name: Set up Helm
+       uses: azure/setup-helm@v3
        with:
-         ref: ${{ github.event.pull_request.merge_commit_sha }}
-         fetch-depth: '0'
+         version: v3.12.1
+     -  
+       uses: actions/setup-python@v4
+       with:
+         python-version: '3.10'
+         check-latest: true
      -
-       name: Bump version and push tag
-       uses: anothrNick/github-tag-action@1.64.0 # Don't use @master or @v1 unless you're happy to test the latest version
+       name: Run chart-testing (lint)
+       run: helm lint ${{ env.CHARTS_DIR }} 
+     -
+       name: Run replace-version-chart
+       run: |
+             sed -i 's/version: .*/version: ${{ steps.tag_version.outputs.new_tag }}/' 12-helm/wcg/Chart.yaml  
+     -
+       name: Run chart-package
+       run: |
+             helm package 12-helm/wcg -d 12-helm/.cr-releas-packages --version ${{ steps.tag_version.outputs.new_tag }}
+             ls -la 12-helm/.cr-releas-packages
+     -
+        name: Configure Git
+        run: |
+              git config user.name "$GITHUB_ACTOR"
+              git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+     -
+       name: Run chart-releaser
+       uses: helm/chart-releaser-action@v1.6.0
        env:
-         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # if you don't want to set write permissions use a PAT token
-         WITH_V: true
-         PRERELEASE: true 
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          CR_SKIP_EXISTING: false
+          CR_PACKAGE_PATH: 12-helm/.cr-releas-packages  
+       with:     
+          charts_dir: ${{ env.CHARTS_DIR }}
+          skip_packaging: true
+          mark_as_latest: true  
+          packages_with_index: false  
+          pages_branch: gh-pages 
+          config: cr.yaml
