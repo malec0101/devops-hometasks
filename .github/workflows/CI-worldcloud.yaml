@@ -40,6 +40,7 @@ jobs:
        id: tag_version  
        uses: anothrNick/github-tag-action@1.64.0 # Don't use @master or @v1 unless you're happy to test the latest version
        env:
+         GIT_API_TAGGING: false
          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # if you don't want to set write permissions use a PAT token
            #WITH_V: true
          DEFAULT_BUMP: ${{ env.TAG_DEFAULT_BUMP }}  
@@ -91,7 +92,6 @@ jobs:
        name: Run chart-package
        run: |
              helm package 12-helm/wcg -d 12-helm/.cr-releas-packages --version ${{ steps.tag_version.outputs.new_tag }}
-             ls -la
              ls -la 12-helm/.cr-releas-packages
      -
         name: Configure Git
@@ -107,6 +107,7 @@ jobs:
           CR_PACKAGE_PATH: 12-helm/.cr-releas-packages  
        with:     
           charts_dir: ${{ env.CHARTS_DIR }}
-          skip_packaging: true  
+          skip_packaging: true
+          packages_with_index: true  
           pages_branch: gh-pages 
           config: cr.yaml
