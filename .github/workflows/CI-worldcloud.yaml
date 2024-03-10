@@ -110,7 +110,7 @@ jobs:
        uses: helm/chart-releaser-action@v1.6.0
        env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          CR_SKIP_EXISTING: true  
        with:     
-          charts_dir: 12-helm
-          config: ct.yaml
-          version: ${{ steps.tag_version.outputs.new_tag }}
+          charts_dir: 12-helm/wcg
+          config: cr.yaml

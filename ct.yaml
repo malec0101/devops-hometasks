@@ -1,5 +1,0 @@
-remote: origin
-chart-dirs:
-  - 12-helm
-owner: malec0101
-git-base-url: https://api.github.com/  
