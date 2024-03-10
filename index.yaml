@@ -3,6 +3,18 @@ entries:
   word-cloud-generator:
   - apiVersion: v2
     appVersion: "1.0"
+    created: "2024-03-10T20:32:37.881652842Z"
+    description: A simple Helm chart for Kubernetes
+    digest: 96b96c43d3f4e18e3c451ce30be033907a29a381b4344344eb1ebb39f7f8d985
+    name: word-cloud-generator
+    sources:
+    - https://github.com/malec0101/devops-hometasks/tree/main/12-helm
+    type: application
+    urls:
+    - https://github.com/malec0101/devops-hometasks/releases/download/word-cloud-generator-1.0.4/word-cloud-generator-1.0.4.tgz
+    version: 1.0.4
+  - apiVersion: v2
+    appVersion: "1.0"
     created: "2024-03-10T17:25:12.02915403Z"
     description: A simple Helm chart for Kubernetes
     digest: 500603db9cd79b047dc99a320df73b1bf36bd1ef66c769962c5a9215bb2fe67c
@@ -37,4 +49,4 @@ entries:
     urls:
     - https://github.com/malec0101/devops-hometasks/releases/download/word-cloud-generator-1.0.1/word-cloud-generator-1.0.1.tgz
     version: 1.0.1
-generated: "2024-03-10T17:25:12.029280687Z"
+generated: "2024-03-10T20:32:37.881671006Z"
