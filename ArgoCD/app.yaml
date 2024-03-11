@@ -3,6 +3,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: wcg
+  namespace: argocd  
 spec:
   destination:
     name: ''
@@ -11,7 +12,7 @@ spec:
   source:
     path: ''
     repoURL: 'https://malec0101.github.io/devops-hometasks/'
-    targetRevision: 1.0.3
+    targetRevision: 1.0.6
     chart: word-cloud-generator
   sources: []
   project: default

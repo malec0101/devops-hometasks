@@ -1,7 +1,7 @@
 replicas: 3
 
 service:
-  externalPort: 80
+  externalPort: 8888
   internalPort: 8888  
 
 container:
