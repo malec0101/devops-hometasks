@@ -12,8 +12,12 @@ spec:
   source:
     path: ''
     repoURL: 'https://malec0101.github.io/devops-hometasks/'
-    targetRevision: 1.0.6
     chart: word-cloud-generator
+    targetRevision: 1.0.6
+    helm:
+    parameters:
+      - name: ingress.host
+        value: localhost.wcg  
   sources: []
   project: default
   syncPolicy:
