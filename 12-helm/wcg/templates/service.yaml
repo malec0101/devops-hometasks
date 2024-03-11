@@ -5,6 +5,7 @@ metadata:
   labels:
     app: {{ template "wcg.name" . }}
 spec:
+  type: {{ .Values.service.type }}
   ports:
     - protocol: TCP
       port: {{ .Values.service.externalPort }}
